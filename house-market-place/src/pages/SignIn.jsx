@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRightIcon.svg";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
 
@@ -14,9 +16,40 @@ function SignIn() {
   const navigate = useNavigate();
 
   const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    setFormData((prevState) => ({
+        ...prevState,
+        [e.target.id]: e.target.value 
+    }));
+};
 
+const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const auth = getAuth();
+        const userCredentialPromise = signInWithEmailAndPassword(auth, email, password);
+        toast.promise(
+          userCredentialPromise,
+          {
+            pending: 'Signing in...',
+            success: 'Signed in successfully!',
+            error: 'Oops! Something went wrong. Please try again.',
+          }
+        );
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log(user, "user");
+        if(user) {
+            navigate("/profile");
+        } else {
+            navigate("/sign-in");
+        }
+    } catch (error) {
+        console.log(error, "error");
+        if (error.code === 'auth/email-already-in-use') {
+          toast.error('The email address is already in use by another account.');
+        }
+    }
+}
   console.log(formData, "formData");
 
   return (
@@ -26,10 +59,9 @@ function SignIn() {
           <p className="pageHeader">Welcome Back</p>
         </header>
 
-        <form>
+        <form onSubmit={onSubmit}>
           <input
             type="email"
-            name="email"
             className="emailInput"
             placeholder="Email"
             id="email"
@@ -39,7 +71,6 @@ function SignIn() {
           <div className="passwordInputDiv">
             <input
               type={showPassword ? "text" : "password"}
-              name="password"
               className="passwordInput"
               placeholder="Password"
               id="password"
@@ -52,8 +83,24 @@ function SignIn() {
               className="showPassword"
               onClick={() => setShowPassword(!showPassword)}
             />
+            <Link to='/forgot-password' className="forgotPasswordLink">
+                Forgot Password
+            </Link>
+            <div className="signInBar">
+                <p className="signInText">
+                    Sign In
+                </p>
+                <button className="signInButton">
+                    <ArrowRightIcon fill="#fff" width="34px" height="34px" />
+                </button>
+            </div>
           </div>
         </form>
+
+        {/* Google OAuth */}
+        <Link to="/sign-up" className="registerLink">
+            Sign up Instead
+        </Link>
       </div>
     </>
   );
