@@ -45,9 +45,7 @@ const onSubmit = async (e) => {
         }
     } catch (error) {
         console.log(error, "error");
-        if (error.code === 'auth/email-already-in-use') {
-          toast.error('The email address is already in use by another account.');
-        }
+
     }
 }
   console.log(formData, "formData");
