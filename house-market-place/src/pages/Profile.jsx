@@ -2,8 +2,8 @@ import React from "react";
 import { getAuth, updateProfile } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase.config";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function Profile() {
@@ -89,7 +89,7 @@ function Profile() {
           <div className="profileDetailsHeader">
             <p className="profileDetailsText">Personal Details</p>
             <p className="changePersonalDetails" onClick={onChangeDetails}>
-              {changeDetails ? "Save" : "Change"}
+              {changeDetails ? "Save" : "Change Name"}
             </p>
           </div>
           <div className="profileCard">
@@ -102,11 +102,15 @@ function Profile() {
                 value={formData.name}
                 onChange={onChange}
               />
+            </form>
+          </div>
+          <div className="profileCard" style={{ marginTop : '1rem'}}>
+            <form>
               <input
                 type="text"
                 id="email"
-                className={!changeDetails ? "profileEmail" : "profileEmailActive"}
-                disabled={!changeDetails}
+                className={"profileEmail"}
+                disabled
                 value={formData.email}
                 onChange={onChange}
               />
